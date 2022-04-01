@@ -60,6 +60,8 @@ async function execute(message,serverQueue){
   };
 
   if(!serverQueue){
+    
+  
 
   }
   else{
