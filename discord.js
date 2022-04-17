@@ -1,5 +1,5 @@
-const {Client, Intents} = require('discord.js');
-const { joinVoiceChannel } = require('@discordjs/voice');
+const {Client, Intents,MessageEmbed} = require('discord.js');
+const discordVoice  = require('@discordjs/voice');
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES]});
 require('dotenv').config();
 client.on('ready',()=>{
@@ -8,21 +8,40 @@ client.on('ready',()=>{
 
 const queue = new Map();
 
+
+const player = discordVoice.createAudioPlayer();
+const resource = discordVoice.createAudioResource('./droptest.mp3');
+           
+
 const prefix = '!';
 client.on('message', async msg => {
-
-  if (msg.content === "ping") {
+  if(msg.author.bot)
+    return;
+  if (msg.content === prefix + "ping") {
     await msg.channel.send('Pong!');
   }
-    const connection = joinVoiceChannel({
-      channelId: msg.channel.id,
-      guildId: msg.channel.guild.id,
-      adapterCreator: msg.channel.guild.voiceAdapterCreator,
-    });
-    joinVoiceChannel(msg);
+});
+
+
+client.on('message', async msg => {
+  const connection = joinVoiceChannel.joinVoiceChannel({
+    channelId: msg.channel.id,
+    guildId: msg.guild.id,
+    adapterCreator: msg.guild.voiceAdapterCreator,
+  });
+      
+
+  if(msg.author.bot)
+  return;
+  if (msg.content === prefix + "voice") {
+      player.play(resource);
+      connection.subscribe(player);
+      console.log("Bot sent to voice");
+  };
 });
 
 
 
-
-client.login(process.env.CLIENT_TOKEN);
+client.login(process.env.CLIENT_TOKEN).then(() => {
+client.user.setPresence({activities : [{name: 'The F* out of life', type: 'PLAYING'}], status: 'online'});
+});
