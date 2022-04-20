@@ -11,15 +11,7 @@ client.on('ready',()=>{
 const queue = new Map();
       
 const prefix = '!';
-client.on('message', async msg => {
-  if(msg.author.bot)
-    return;
-  if (msg.content === prefix + "ping") {
-    await msg.channel.send('Pong!');
-  }
-});
-
-client.on('message', async msg => {
+client.on('messageCreate', async msg => {
   if(msg.author.bot) //checks if the messages are bot's or not
     return;
 
@@ -87,13 +79,12 @@ async function execute(message, serverQueue){
       adapterCreator: message.guild.voiceAdapterCreator,
       
     });
-    const player = discordVoice.createAudioPlayer();
-    connection.subscribe(player)
-
-    play(message.guild, queueContruct.songs[0]);
-   
-    // to establish connection of bot and voice channel
+    queueContruct.connection = connection;
     
+    const player = discordVoice.createAudioPlayer();
+    connection.subscribe(player);
+    play(message.guild, queueContruct.songs[0]);
+    // to establish connection of bot and voice channel
     }
     catch(err){
       console.log(err);
@@ -134,9 +125,10 @@ function play(guild,song){
     queue.delete(guild.id);
     return;
   }
+  
   const dispatcher = serverQueue.connection
   .play(ytdl(song.url))
-  .on("finish", () => {
+  .on("end", () => {
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
   })
@@ -144,13 +136,6 @@ function play(guild,song){
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 serverQueue.textChannel.send(`Start playing: **${song.title}**`);
 }
-
-
-
-
-
-
-
 
 client.login(process.env.CLIENT_TOKEN).then(() => {
 client.user.setPresence({activities : [{name: 'The F* out of life', type: 'PLAYING'}], status: 'online'});
