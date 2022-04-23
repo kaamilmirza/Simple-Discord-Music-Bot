@@ -86,7 +86,7 @@ async function execute(message, serverQueue) {
         guildId: message.guild.id,
         adapterCreator: message.guild.voiceAdapterCreator,
       });
-
+      //Creating an audio player
       const connection = createAudioPlayer({
         behaviors: {
           noSubscriber: NoSubscriberBehavior.Pause,
@@ -94,8 +94,9 @@ async function execute(message, serverQueue) {
       });
 
       queueContruct.connection = connection;
-
+      //voice channel connection is subscribed to the audio player
       vc.subscribe(connection);
+      //
       play(message.guild, queueContruct.songs[0]);
       // to establish connection of bot and voice channel
     } catch (err) {
@@ -130,7 +131,7 @@ function play(guild, song) {
     queue.delete(guild.id);
     return;
   }
-
+  //creating an audio resource using url
   const resource = createAudioResource(ytdl(song.url));
   const dispatcher = serverQueue.connection;
   dispatcher.play(resource);
