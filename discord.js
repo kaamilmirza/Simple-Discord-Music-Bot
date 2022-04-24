@@ -1,5 +1,4 @@
 // before using the code, do install usetube, @discordjs/opus & libsodium-wrappers using npm/yarn.
-
 const { Client, Intents } = require('discord.js');
 const discordVoice = require('@discordjs/voice');
 const { createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
